@@ -4,10 +4,10 @@ const typeOf = require('type-detect');
 const ellipsize = require('ellipsize');
 const wrap = require('word-wrap');
 const chalk = require('chalk');
-const map = require('lodash/map');
+const _ = require('lodash');
 const chromafi = require('chromafi');
 
-function wrapMsg (msg, indent) {
+function wrapMsg (msg, indent, indentFirst = false) {
 		let width = process.stdout.columns - indent - 2;
 		//		console.log('width: ', width);
 
@@ -30,31 +30,36 @@ function wrapMsg (msg, indent) {
 		// msg = firstLine + msg;
 		// }
 
-		return msg.trimLeft() + '\n'.padEnd(indent) + chalk.dim(''.padEnd(width, '°'));
+		msg = indentFirst ? msg : msg.trimLeft();
+		return msg + '\n'.padEnd(indent) + chalk.dim(''.padEnd(width, '°'));
 }
 
 
-module.exports = require('tracer')
-    .colorConsole(
-        {
-            format : [
-                chalk`{dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`, //default format
-                {
-                    error : "{{timestamp}} <{{title}}> {{message}} (in {{file}}:{{line}})\nCall Stack:\n{{stack}}" // error format
-                }
-            ],
+module.exports = function (opts) {
+		return require('tracer')
+				.colorConsole(_.merge({
+						format : [
+								chalk`{dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`, //default format
+								{
+										info: chalk`{cyan.dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`, 
+										debug: chalk`{blue.dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`,
+										warn: chalk`{keyword('orange').dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`, 
+										error: chalk`{red.dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}\n\{\{stack\}\}`,
+										// error : "{{timestamp}} <{{title}}> {{message}} (in {{file}}:{{line}})\nCall Stack:\n{{stack}}" 
+								}
+						],
 						// filter: [
 						// wrapMsg,	
 						// ],
-            dateformat : "HH:MM:ss.L",
-            preprocess :  function(data){
-                data.title = data.title.toUpperCase();
+						dateformat : "HH:MM:ss.L",
+						preprocess :  function(data){
+								// data.title = data.title.toUpperCase();
 								
 								data.line = data.line.padStart(3);
 								data.file = ellipsize(data.file, 14).padStart(16);
 								data.method = ellipsize(data.method, 14).padEnd(16);
 								// make sure that we use chromafi to get nice looking object
-								data.args = map(data.args, a =>{
+								data.args = _.map(data.args, a =>{
 										if([ 'object', 'function', 'array'].includes(typeOf(a).toLowerCase())){
 												a = chromafi(a, {
 														// lineNumberPad: 0,
@@ -86,11 +91,9 @@ module.exports = require('tracer')
 								});
 								// console.dir(data.args, {depth: null, colors: true});
 								data.args = [wrapMsg(util.format(...data.args), 40)]; // combine the whole args array into one message and wrap it befor passing it back
-								// data.message = 'aksjdlhlf';//wrap(data.message, {width: 24, indent: ''.padStart(60).concat('| ')});
-								// data.message = wrap(data.message, {width: process.stdout.columns - 62, indent: ''.padStart(60).concat('| ')});
-								// .replace(/\n/g, "\n" + " ".repeat(49) + " | ")
-								// .replace(/\\n/g, "\n")
-								// .replace(/\\/g, '')
-								// .concat("\n");
-            }
-        });
+
+								data.stack = wrapMsg(data.stack, 40, true).replace(/\n[\s]*?\n/g, '\n');
+
+						}
+				}, opts));
+};
