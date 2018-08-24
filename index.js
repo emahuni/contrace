@@ -1,4 +1,6 @@
 const util = require('util');
+const path = require('path');
+
 // console.log(process.stdout.columns);
 const typeOf = require('type-detect');
 const ellipsize = require('ellipsize');
@@ -56,7 +58,7 @@ module.exports = function (opts) {
 								// data.title = data.title.toUpperCase();
 								
 								data.line = data.line.padStart(3);
-								data.file = data.path + ellipsize(data.file, 14);//.padStart(16); // concatenate path and file name
+								data.file = path.dirname(data.path) + path.sep + ellipsize(data.file, 14);//.padStart(16); // concatenate path and file name
 								data.file = data.file.length > 16 ? '...' + data.file.slice(-14)  : data.file ; // trime excess path and have a total of 16 chars left
 								data.method = ellipsize(data.method, 14).padEnd(16);
 								// make sure that we use chromafi to get nice looking object
