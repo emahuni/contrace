@@ -1,0 +1,46 @@
+{
+  "name": "con-fi",
+  "version": "0.1.0",
+  "description": "Log to console showing line number, file and method from where the log originated. Also nicely highlight code for functions, objects, arrays etc. using an ide like feel.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emahuni/con-fi.git"
+  },
+  "keywords": [
+    "console",
+    "log",
+    "line",
+    "number",
+    "file",
+    "method",
+    "highlight",
+    "format",
+    "function",
+    "object",
+    "array",
+    "ide"
+  ],
+  "author": "Emmanuel Mahuni",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/emahuni/con-fi/issues"
+  },
+  "homepage": "https://github.com/emahuni/con-fi#readme",
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "chromafi": "^2.1.0",
+    "ellipsize": "^0.1.0",
+    "lodash": "^4.17.10",
+    "tracer": "^0.9.1",
+    "type-detect": "^4.0.8",
+    "word-wrap": "^1.2.3"
+  },
+
+	"engines": {
+		"node": "^8",
+	}
+}
