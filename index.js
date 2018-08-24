@@ -21,7 +21,7 @@ function wrapMsg (msg, indent) {
 		// msg = msg.substr(width);
 		msg = wrap(msg, {
 				width,
-				indent: ''.padStart(indent).concat('| '),
+				indent: ''.padStart(indent).concat(chalk`{grey.bold | }`),
 				// escape: function(string){
 				// return string.padEnd(width, '~' );
 				// },
