@@ -2,7 +2,8 @@ const util = require('util');
 // console.log(process.stdout.columns);
 const typeOf = require('type-detect');
 const ellipsize = require('ellipsize');
-const wrap = require('word-wrap');
+// const wrap = require('word-wrap');
+const wrap = require('wrap-ansi');
 const chalk = require('chalk');
 const _ = require('lodash');
 const chromafi = require('chromafi');
@@ -19,19 +20,25 @@ function wrapMsg (msg, indent, indentFirst = false) {
 		// console.log('firstLine: ',  firstLine);
 
 		// msg = msg.substr(width);
-		msg = wrap(msg, {
-				width,
-				indent: ''.padStart(indent).concat(chalk`{grey.bold | }`),
+		msg = wrap(msg, width).replace(/\r\n/g, '\n').replace(/\n/g, '\n' + ''.padStart(indent).concat(chalk`{grey.bold | }`) ) ;// {
+				// width,
+				// indent: ''.padStart(indent).concat(chalk`{grey.bold | }`),
 				// escape: function(string){
 				// return string.padEnd(width, '~' );
 				// },
-		});
+		// });
+		// console.debug('msg lines: %s', msg.split('\n'));
+		
+
 
 		// msg = firstLine + msg;
 		// }
 
 		msg = indentFirst ? msg : msg.trimLeft();
-		return msg + '\n'.padEnd(indent) + chalk.dim(''.padEnd(width, '°'));
+		msg = msg + '\n'.padEnd(indent) + chalk.dim(''.padEnd(width, '°'));
+
+		// remove broken formatting
+		return msg.replace(/\n[\s]*?\n/g, '\n');
 }
 
 
@@ -92,7 +99,7 @@ module.exports = function (opts) {
 								// console.dir(data.args, {depth: null, colors: true});
 								data.args = [wrapMsg(util.format(...data.args), 40)]; // combine the whole args array into one message and wrap it befor passing it back
 
-								data.stack = wrapMsg(data.stack, 40, true).replace(/\n[\s]*?\n/g, '\n');
+								data.stack = wrapMsg(data.stack, 40, true);
 
 						}
 				}, opts));
