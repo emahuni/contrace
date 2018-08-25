@@ -50,7 +50,7 @@ module.exports = function (opts) {
 								// make sure that we use chromafi to get nice looking object
 								data.args = _.map(data.args, a =>{
 										if([ 'object', 'function', 'array'].includes(typeOf(a).toLowerCase())){
-												a = chromafi(a, {
+												a = '\n' + chromafi(a, {
 														// lineNumberPad: 0,
 														// codePad: 2,
 														// indent: 4,
@@ -82,7 +82,6 @@ module.exports = function (opts) {
 								data.args = [wrapMsg(util.format(...data.args), 40)]; // combine the whole args array into one message and wrap it befor passing it back
 
 								data.stack = wrapMsg(data.stack, 40, true);
-
 						}
 				}, opts));
 };
