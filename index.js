@@ -15,7 +15,7 @@ function wrapMsg (msg, indent, indentFirst = false) {
 		// msg = msg.substr(width);
 		let sep = chalk`{grey.bold | }`, gutter = ''.padStart(indent).concat(sep) ;
 		// wrap the msg, remove windows line endings and use unix line endings, then use gutter indention
-		msg = wrap(msg, width).replace(/\r\n/g, '\n').replace(/\n/g, '\n' + gutter) ;// {
+		msg = wrap(msg, width, {trim: false}).replace(/\r\n/g, '\n').replace(/\n/g, '\n' + gutter) ;// {
 
 		msg = indentFirst ? gutter + msg: sep + msg; // correct the first indention according to opts
 		msg = msg + '\n'.padEnd(indent) + chalk.dim(''.padEnd(width, '°')); // put ruler
@@ -52,8 +52,8 @@ module.exports = function (opts) {
 										if([ 'object', 'function', 'array'].includes(typeOf(a).toLowerCase())){
 												a = chromafi(a, {
 														// lineNumberPad: 0,
-														// codePad: 2,
-														// indent: 4,
+														codePad: 2,
+														indent: 2,
 														lineNumbers: true,
 														colors: {
 																base: chalk.bold,
