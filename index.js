@@ -20,7 +20,9 @@ function wrapMsg (msg, indent, indentFirst = false) {
 		// console.log('firstLine: ',  firstLine);
 
 		// msg = msg.substr(width);
-		msg = wrap(msg, width).replace(/\r\n/g, '\n').replace(/\n/g, '\n' + ''.padStart(indent).concat(chalk`{grey.bold | }`) ) ;// {
+		let sep = chalk`{grey.bold | }`, gutter = ''.padStart(indent).concat(sep) ;
+		// wrap the msg, remove windows line endings and use unix line endings, then use gutter indention
+		msg = wrap(msg, width).replace(/\r\n/g, '\n').replace(/\n/g, '\n' + gutter) ;// {
 				// width,
 				// indent: ''.padStart(indent).concat(chalk`{grey.bold | }`),
 				// escape: function(string){
@@ -34,11 +36,11 @@ function wrapMsg (msg, indent, indentFirst = false) {
 		// msg = firstLine + msg;
 		// }
 
-		msg = indentFirst ? msg : msg.trimLeft();
-		msg = msg + '\n'.padEnd(indent) + chalk.dim(''.padEnd(width, '°'));
+		msg = indentFirst ? gutter + msg: sep + msg; // correct the first indention according to opts
+		msg = msg + '\n'.padEnd(indent) + chalk.dim(''.padEnd(width, '°')); // put ruler
 
-		// remove broken formatting
-		return msg.replace(/\n[\s]*?\n/g, '\n');
+		// return the msg
+		return msg; //.replace(/\n[\s]*?\n/g, '\n'); 		// remove broken formatting
 }
 
 
