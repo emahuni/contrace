@@ -1,6 +1,6 @@
 {
   "name": "con-fi",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Log to console showing line number, file and method from where the log originated. Also nicely highlight code for functions, objects, arrays etc. using an ide like feel.",
   "main": "index.js",
   "scripts": {
