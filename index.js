@@ -34,7 +34,7 @@ module.exports = function (opts) {
 								chalk`{dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`, //default format
 								{
 										info: chalk`{cyan.dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`,
-										debug: chalk`{blue.dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`,
+										debug: chalk`{blue.dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } {reset.red \{\{message\}\} }`,
 										verbose: chalk`{grey.dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`,
 										warn: chalk`{keyword('orange').dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`,
 										error: chalk`{red.dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}\n\{\{stack\}\}`,
