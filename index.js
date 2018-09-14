@@ -10,7 +10,7 @@ const chalk = require('chalk');
 const _ = require('lodash');
 const chromafi = require('chromafi');
 
-function wrapMsg (msg, indent, indentFirst = false) {
+function wrapMsg (msg, indent, indentFirst = false, ruler = false) {
 		let width = process.stdout.columns - indent - 2;
 		//		console.log('width: ', width);
 
@@ -20,7 +20,9 @@ function wrapMsg (msg, indent, indentFirst = false) {
 		msg = wrap(msg, width, {trim: false}).replace(/\r\n/g, '\n').replace(/\n/g, '\n' + gutter) ;// {
 
 		msg = indentFirst ? gutter + msg: sep + msg; // correct the first indention according to opts
-		msg = msg + '\n'.padEnd(indent) + chalk.dim(''.padEnd(width, '°')); // put ruler
+		if(ruler) {
+				msg = msg + '\n'.padEnd(indent) + chalk.dim(''.padEnd(width, '°')); // put ruler
+		}
 
 		// return the msg
 		return msg; //.replace(/\n[\s]*?\n/g, '\n'); 		// remove broken formatting
@@ -28,8 +30,14 @@ function wrapMsg (msg, indent, indentFirst = false) {
 
 
 module.exports = function (opts) {
-		return require('tracer')
-				.colorConsole(_.merge({
+		opts = _.merge(
+				// default opts
+				{
+						ruler: false,
+				},
+
+				// default tracer options and the functionality thereof
+				{
 						format : [
 								chalk`{dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`, //default format
 								{
@@ -83,9 +91,16 @@ module.exports = function (opts) {
 										return a;
 								});
 								// console.dir(data.args, {depth: null, colors: true});
-								data.args = [wrapMsg(util.format(...data.args), 40)]; // combine the whole args array into one message and wrap it befor passing it back
+								data.args = [wrapMsg(util.format(...data.args), 40, false, opts.ruler)]; // combine the whole args array into one message and wrap it befor passing it back
 
-								data.stack = wrapMsg(data.stack, 40, true);
+								data.stack = wrapMsg(data.stack, 40, true, opts.ruler);
 						}
-				}, opts));
+				},
+
+				// overriding of passed user opts
+				opts
+		);
+
+		return require('tracer')
+				.colorConsole(opts);
 };
