@@ -35,6 +35,7 @@ module.exports = function (opts) {
 								{
 										info: chalk`{cyan.dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`,
 										debug: chalk`{blue.dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`,
+										verbose: chalk`{grey.dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`,
 										warn: chalk`{keyword('orange').dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`,
 										error: chalk`{red.dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}\n\{\{stack\}\}`,
 										// error : "{{timestamp}} <{{title}}> {{message}} (in {{file}}:{{line}})\nCall Stack:\n{{stack}}"
