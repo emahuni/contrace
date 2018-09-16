@@ -1,18 +1,18 @@
-# Contra
+# Contrace
 
-Console trace is a console package that tells you info about where each log occured and in which file. It's often difficult to come up with the source of a log and remember to remove or silence logs. Contra simplifies this by printing out the source line and file from where the log occured. It does this in a neat fashion and is completely customizable.
+Console trace is a console package that tells you info about where each log occured and in which file. It's often difficult to come up with the source of a log and remember to remove or silence logs. Contrace simplifies this by printing out the source line and file from where the log occured. It does this in a neat fashion and is completely customizable.
 
 
 ## Installation
 
 ```sh
-npm install contra
+npm install contrace
 ```
 
 ## Usage
 
 ```js
-const con = require('contra')(/*  [options] */);
+const con = require('contrace')(/*  [options] */);
 
 con.log('your log output');
 con.debug('your debug output');

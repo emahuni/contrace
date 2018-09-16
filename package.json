@@ -1,5 +1,5 @@
 {
-  "name": "contra",
+  "name": "contrace",
   "version": "0.4.0",
   "description": "Log to console showing line number, file and method from where the log originated. Also nicely highlight code for functions, objects, arrays etc. using an ide like feel.",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/emahuni/contra.git"
+    "url": "git+https://github.com/emahuni/contrace.git"
   },
   "keywords": [
     "console",
@@ -28,9 +28,9 @@
   "author": "Emmanuel Mahuni",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/emahuni/contra/issues"
+    "url": "https://github.com/emahuni/contrace/issues"
   },
-  "homepage": "https://github.com/emahuni/contra#readme",
+  "homepage": "https://github.com/emahuni/contrace#readme",
   "dependencies": {
     "chalk": "^2.4.1",
     "chromafi": "^2.1.0",
