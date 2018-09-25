@@ -10,7 +10,7 @@ const chalk = require('chalk');
 const _ = require('lodash');
 const chromafi = require('chromafi');
 
-function wrapMsg (msg, indent, indentFirst = false, ruler = false) {
+function wrapMsg (msg, indent, indentFirst = false, opts) {
   let width = process.stdout.columns - indent - 2;
   //    console.log('width: ', width);
 
@@ -20,7 +20,7 @@ function wrapMsg (msg, indent, indentFirst = false, ruler = false) {
   msg = wrap(msg, width, {trim: false}).replace(/\r\n/g, '\n').replace(/\n/g, '\n' + gutter) ;// {
 
   msg = indentFirst ? gutter + msg: sep + msg; // correct the first indention according to opts
-  if(ruler) {
+  if(opts.ruler) {
     msg = msg + '\n'.padEnd(indent) + chalk.dim(''.padEnd(width, '°')); // put ruler
   }
 
@@ -34,18 +34,24 @@ module.exports = function (opts) {
     // default opts
     {
       ruler: false,
+      showMethod: false,
     },
+    // user opts
+    opts
+  );
 
+  // now create the tracer opts to merge with the opts
+  opts = _.merge(
     // default tracer options and the functionality thereof
     {
       format : [
         chalk`{dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`, //default format
         {
-          info: chalk`{cyan.dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`,
-          debug: chalk`{blue.dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } {reset.red \{\{message\}\} }`,
-          verbose: chalk`{grey.dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`,
-          warn: chalk`{keyword('orange').dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`,
-          error: chalk`{red.dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}\n\{\{stack\}\}`,
+          info: chalk`{cyan.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' }} \{\{message\}\}`,
+          debug: chalk`{blue.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' } } {reset.red \{\{message\}\} }`,
+          verbose: chalk`{grey.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' } } \{\{message\}\}`,
+          warn: chalk`{keyword('orange').dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' } } \{\{message\}\}`,
+          error: chalk`{red.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' } } \{\{message\}\}\n\{\{stack\}\}`,
           // error : "{{timestamp}} <{{title}}> {{message}} (in {{file}}:{{line}})\nCall Stack:\n{{stack}}"
         }
       ],
@@ -55,9 +61,10 @@ module.exports = function (opts) {
         // data.title = data.title.toUpperCase();
 
         data.line = data.line.padStart(3);
-        data.file = path.dirname(data.path) + path.sep + ellipsize(data.file, 14);//.padStart(16); // concatenate path and file name
-        data.file = data.file.length > 16 ? '...' + data.file.slice(-13)  : data.file ; // trime excess path and have a total of 16 chars left
-        data.method = ellipsize(data.method, 14).padEnd(16);
+        let nlen = opts.showMethod ? 16:32;
+        data.file = path.dirname(data.path) + path.sep + ellipsize(data.file, nlen - 2);//.padStart(16); // concatenate path and file name
+        data.file = data.file.length > nlen ? '...' + data.file.slice((nlen - 3) * -1)  : data.file ; // trime excess path and have a total of 16 chars left
+        data.method = opts.showMethod ? ellipsize(data.method, nlen - 2).padEnd(nlen): null;
 
         // make sure that we use chromafi to get nice looking object
         data.args = _.map(data.args, a =>{
@@ -91,9 +98,9 @@ module.exports = function (opts) {
           return a;
         });
         // console.dir(data.args, {depth: null, colors: true});
-        data.args = [wrapMsg(util.format(...data.args), 40, false, opts.ruler)]; // combine the whole args array into one message and wrap it befor passing it back
+        data.args = [wrapMsg(util.format(...data.args), 40, false, opts)]; // combine the whole args array into one message and wrap it befor passing it back
 
-        data.stack = wrapMsg(data.stack, 40, true, opts.ruler);
+        data.stack = wrapMsg(data.stack, 40, true, opts);
       }
     },
 
