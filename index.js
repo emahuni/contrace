@@ -34,7 +34,7 @@ module.exports = function (opts) {
   opts = _.merge(
     // default opts
     {
-      ruler: true,
+      ruler: false,
       showMethod: false,
       ellipse: '…', // single char ellipse
       lineNumLen: 4,
