@@ -53,13 +53,13 @@ module.exports = function (opts) {
     // default tracer options and the functionality thereof
     {
       format : [
-        chalk`{dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`, //default format
+        chalk`{dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' }} \{\{message\}\}`, //default format
         {
           info: chalk`{cyan.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' }} \{\{message\}\}`,
-          debug: chalk`{blue.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' } } {reset.red \{\{message\}\} }`,
-          verbose: chalk`{grey.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' } } \{\{message\}\}`,
-          warn: chalk`{keyword('orange').dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' } } \{\{message\}\}`,
-          error: chalk`{red.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' } } \{\{message\}\}\n\{\{stack\}\}`,
+          debug: chalk`{blue.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' }} {reset.red \{\{message\}\} }`,
+          verbose: chalk`{grey.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' }} \{\{message\}\}`,
+          warn: chalk`{keyword('orange').dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' }} \{\{message\}\}`,
+          error: chalk`{red.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' }} \{\{message\}\}\n\{\{stack\}\}`,
           // error : "{{timestamp}} <{{title}}> {{message}} (in {{file}}:{{line}})\nCall Stack:\n{{stack}}"
         }
       ],
