@@ -68,7 +68,7 @@ module.exports = function (opts) {
         // data.title = data.title.toUpperCase();
 
         data.line = data.line.padStart(3);
-        data.file = path.dirname(data.path) + path.sep + ellipsize(data.file, opts.fileLen); // concatenate path and file name
+        data.file = path.dirname(data.path) + path.sep + ellipsize(data.file, opts.fileLen / 1.5); // concatenate path and file name (ellipsize the fn if > fileLen/1.5)
         data.file = data.file.length > opts.fileLen ? opts.ellipse + data.file.slice((opts.fileLen - opts.ellipse.length) * -1)  : data.file ; // trime excess path chars
         data.method = opts.showMethod ? ellipsize(data.method, opts.methodLen).padEnd(opts.methodLen): null;
 
