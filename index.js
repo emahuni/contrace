@@ -10,18 +10,19 @@ const chalk = require('chalk');
 const _ = require('lodash');
 const chromafi = require('chromafi');
 
-function wrapMsg (msg, indent, indentFirst = false, opts) {
-  let width = process.stdout.columns - indent - 2;
+function wrapMsg (msg, indentFirst = false, opts) {
+  let indent = opts.gutterLen;
+  let width = process.stdout.columns - indent;
   //    console.log('width: ', width);
 
   // msg = msg.substr(width);
-  let sep = chalk`{grey.bold | }`, gutter = ''.padStart(indent).concat(sep) ;
+  let sep = chalk`{grey.bold \u2502 }`, gutter = ''.padStart(indent).concat(sep) ;
   // wrap the msg, remove windows line endings and use unix line endings, then use gutter indention
   msg = wrap(msg, width, {trim: false}).replace(/\r\n/g, '\n').replace(/\n/g, '\n' + gutter) ;// {
 
   msg = indentFirst ? gutter + msg: sep + msg; // correct the first indention according to opts
   if(opts.ruler) {
-    msg = msg + '\n'.padEnd(indent) + chalk.dim(''.padEnd(width, '°')); // put ruler
+    msg = msg + '\n'.padEnd(indent, '\u2500') + '\u253C' + chalk.dim(''.padEnd(width - 1, '\u2500')); // put ruler
   }
 
   // return the msg
@@ -48,18 +49,20 @@ module.exports = function (opts) {
   opts.methodLen = opts.showMethod ? (opts.methodLen || (opts.fileLen ? (opts.pathLen - opts.fileLen - 1) : (opts.pathLen/2) - 1)): 0; // - 1 is there for the separator between path and method
   opts.fileLen = opts.fileLen || opts.methodLen ? opts.pathLen - opts.methodLen - 1 : opts.pathLen; // - 1 is there for the separator between path and method
 
+  opts.gutterLen = opts.lineNumLen + opts.pathLen + 4; // the indentation length ( including spaces and sep char)
+
   // now create the tracer opts to merge with the opts
   opts = _.merge(
     // default tracer options and the functionality thereof
     {
       format : [
-        chalk`{dim @\{\{line\}\} \{\{file\}\}:\{\{method\}\} } \{\{message\}\}`, //default format
+        chalk`{dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' }} \{\{message\}\}`, //default format
         {
           info: chalk`{cyan.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' }} \{\{message\}\}`,
-          debug: chalk`{blue.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' } } {reset.red \{\{message\}\} }`,
-          verbose: chalk`{grey.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' } } \{\{message\}\}`,
-          warn: chalk`{keyword('orange').dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' } } \{\{message\}\}`,
-          error: chalk`{red.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' } } \{\{message\}\}\n\{\{stack\}\}`,
+          debug: chalk`{blue.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' }} {reset.red \{\{message\}\} }`,
+          verbose: chalk`{grey.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' }} \{\{message\}\}`,
+          warn: chalk`{keyword('orange').dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' }} \{\{message\}\}`,
+          error: chalk`{red.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' }} \{\{message\}\}\n\{\{stack\}\}`,
           // error : "{{timestamp}} <{{title}}> {{message}} (in {{file}}:{{line}})\nCall Stack:\n{{stack}}"
         }
       ],
@@ -105,9 +108,9 @@ module.exports = function (opts) {
           return a;
         });
         // console.dir(data.args, {depth: null, colors: true});
-        data.args = [wrapMsg(util.format(...data.args), 40, false, opts)]; // combine the whole args array into one message and wrap it befor passing it back
+        data.args = [wrapMsg(util.format(...data.args), false, opts)]; // combine the whole args array into one message and wrap it befor passing it back
 
-        data.stack = wrapMsg(data.stack, 40, true, opts);
+        data.stack = wrapMsg(data.stack, true, opts);
       }
     },
 
