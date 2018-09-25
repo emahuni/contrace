@@ -35,6 +35,7 @@ module.exports = function (opts) {
     {
       ruler: false,
       showMethod: false,
+      ellipse: '…', // single char ellipse
     },
     // user opts
     opts
@@ -63,7 +64,7 @@ module.exports = function (opts) {
         data.line = data.line.padStart(3);
         let nlen = opts.showMethod ? 16:32;
         data.file = path.dirname(data.path) + path.sep + ellipsize(data.file, nlen - 2);//.padStart(16); // concatenate path and file name
-        data.file = data.file.length > nlen ? '...' + data.file.slice((nlen - 3) * -1)  : data.file ; // trime excess path and have a total of 16 chars left
+        data.file = data.file.length > nlen ? opts.ellipse + data.file.slice((nlen - 3) * -1)  : data.file ; // trime excess path and have a total of 16 chars left
         data.method = opts.showMethod ? ellipsize(data.method, nlen - 2).padEnd(nlen): null;
 
         // make sure that we use chromafi to get nice looking object
