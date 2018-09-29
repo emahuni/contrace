@@ -36,6 +36,7 @@ module.exports = function (opts) {
       ruler: false,
       showMethod: false,
       ellipse: '…', // single char ellipse
+      lineNumLen: 4,
       pathLen: 34,
       fileLen: null, // autocalc from pathLen if null, if both methodLen and fileLen are defined (this plus methodLen - 1) == pathLen
       methodLen: null,  // autocalc from pathLen if null, if both methodLen and fileLen are defined (this plus fileLen - 1) == pathLen
@@ -67,7 +68,7 @@ module.exports = function (opts) {
       preprocess :  function(data){
         // data.title = data.title.toUpperCase();
 
-        data.line = data.line.padStart(3);
+        data.line = data.line.padStart(opts.lineNumLen);
         data.file = path.dirname(data.path) + path.sep + ellipsize(data.file, opts.fileLen / 1.5); // concatenate path and file name (ellipsize the fn if > fileLen/1.5)
         data.file = data.file.length > opts.fileLen ? opts.ellipse + data.file.slice((opts.fileLen - opts.ellipse.length) * -1)  : data.file ; // trime excess path chars
         data.method = opts.showMethod ? ellipsize(data.method, opts.methodLen).padEnd(opts.methodLen): null;
