@@ -21,8 +21,8 @@ function wrapMsg (msg, indentFirst = false, opts) {
   msg = wrap(msg, width, {trim: false}).replace(/\r\n/g, '\n').replace(/\n/g, '\n' + gutter) ;// {
 
   msg = indentFirst ? gutter + msg: sep + msg; // correct the first indention according to opts
-  if(opts.ruler) {
-    msg = msg + '\n'.padEnd(indent, '\u2500') + '\u253C' + chalk.dim(''.padEnd(width - 1, '\u2500')); // put ruler
+  if(opts.divider) {
+    msg = msg + '\n'.padEnd(indent, '\u2500') + '\u253C' + chalk.dim(''.padEnd(width - 1, '\u2500')); // put divider
   }
 
   // return the msg
@@ -34,7 +34,7 @@ module.exports = function (opts) {
   opts = _.merge(
     // default opts
     {
-      ruler: false,
+      divider: false,
       showMethod: false,
       ellipse: '…', // single char ellipse
       lineNumLen: 4,
