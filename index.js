@@ -35,10 +35,17 @@ module.exports = function (opts) {
     {
       ruler: false,
       showMethod: false,
+      ellipse: '…', // single char ellipse
+      pathLen: 34,
+      fileLen: null, // autocalc from pathLen if null, if both methodLen and fileLen are defined (this plus methodLen - 1) == pathLen
+      methodLen: null,  // autocalc from pathLen if null, if both methodLen and fileLen are defined (this plus fileLen - 1) == pathLen
     },
     // user opts
     opts
   );
+
+  opts.methodLen = opts.showMethod ? (opts.methodLen || (opts.fileLen ? (opts.pathLen - opts.fileLen - 1) : (opts.pathLen/2) - 1)): 0; // - 1 is there for the separator between path and method
+  opts.fileLen = opts.fileLen || opts.methodLen ? opts.pathLen - opts.methodLen - 1 : opts.pathLen; // - 1 is there for the separator between path and method
 
   // now create the tracer opts to merge with the opts
   opts = _.merge(
@@ -61,10 +68,9 @@ module.exports = function (opts) {
         // data.title = data.title.toUpperCase();
 
         data.line = data.line.padStart(3);
-        let nlen = opts.showMethod ? 16:32;
-        data.file = path.dirname(data.path) + path.sep + ellipsize(data.file, nlen - 2);//.padStart(16); // concatenate path and file name
-        data.file = data.file.length > nlen ? '...' + data.file.slice((nlen - 3) * -1)  : data.file ; // trime excess path and have a total of 16 chars left
-        data.method = opts.showMethod ? ellipsize(data.method, nlen - 2).padEnd(nlen): null;
+        data.file = path.dirname(data.path) + path.sep + ellipsize(data.file, opts.fileLen / 1.5); // concatenate path and file name (ellipsize the fn if > fileLen/1.5)
+        data.file = data.file.length > opts.fileLen ? opts.ellipse + data.file.slice((opts.fileLen - opts.ellipse.length) * -1)  : data.file ; // trime excess path chars
+        data.method = opts.showMethod ? ellipsize(data.method, opts.methodLen).padEnd(opts.methodLen): null;
 
         // make sure that we use chromafi to get nice looking object
         data.args = _.map(data.args, a =>{
