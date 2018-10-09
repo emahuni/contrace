@@ -47,8 +47,10 @@ After you require the package into your module, you use it like console. The abo
 
 You pass in options as a dictionary to the initialization function ie `const contra = require('contrace')({ /* options */ });`:
 
-- showMethod {boolean}: show the method from where the log occured. Default: false
-- divider {boolean}: use divs to divide log entries. Default: false
+>- showFile {boolean}: show the file path where the log occured. Default: true
+>- showMethod {boolean}: show the method where the log occured. Default: false
+>- showTimestamp {boolean}: show timestamp when the log occured. Default: false
+>- divider {boolean}: use divs to divide log entries. Default: false
 [wip] more options documentations
 
 ## Author
