@@ -1,6 +1,6 @@
 {
   "name": "contrace",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Log to console showing line number, file and method from where the log originated. Also nicely highlight code for functions, objects, arrays etc. using an ide like feel.",
   "main": "index.js",
   "scripts": {
