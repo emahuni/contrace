@@ -38,6 +38,7 @@ module.exports = function (opts) {
     // default opts
     {
       divider: false,
+      showFile: true,
       showMethod: false,
       showTimestamp: false,
       ellipse: '…', // single char ellipse
@@ -52,26 +53,28 @@ module.exports = function (opts) {
   );
 
   opts.methodLen = opts.showMethod ? (opts.methodLen || (opts.fileLen ? (opts.pathLen - opts.fileLen - 1) : ((opts.pathLen - 1)/2))): 0; // - 1 is there for the separator between path and method
-  opts.fileLen = opts.fileLen || opts.methodLen ? opts.pathLen - opts.methodLen - 1 : opts.pathLen; // - 1 is there for the separator between path and method
+  opts.fileLen = opts.showFile ? (opts.fileLen || opts.methodLen ? opts.pathLen - opts.methodLen - 1 : opts.pathLen): 0; // - 1 is there for the separator between path and method
+  opts.timestampLen = opts.showTimestamp ? 3 + opts.timestampLen: 0;
 
-  let method = opts.showMethod ? ':\{\{method\}\}':'',
+  let file = opts.showFile ? '\{\{file\}\}':'',
+      method = opts.showMethod ? ':\{\{method\}\}':'',
       timestamp = opts.showTimestamp ? ' - \{\{timestamp\}\}' :'' ;
 
   // the indentation length ( including spaces and sep char). Each number represents spaces or separation chars
-  opts.gutterLen = 1 + opts.lineNumLen + 1 + opts.pathLen + (opts.showTimestamp ? 3 + opts.timestampLen : 0) + 3;
+  opts.gutterLen = 1 + opts.lineNumLen + 1 + opts.fileLen + (opts.showMethod ? 1:0) + opts.methodLen + opts.timestampLen + 3;
 
   // now create the tracer opts to merge with the opts
   opts = _.merge(
     // default tracer options and the functionality thereof
     {
       format : [
-        chalk`{dim @\{\{line\}\} \{\{file\}\}${method}${timestamp}} \{\{message\}\}`, //default format
+        chalk`{dim @\{\{line\}\} ${file}${method}${timestamp}} \{\{message\}\}`, //default format
         {
-          info: chalk`{cyan.dim @\{\{line\}\} \{\{file\}\}${method}${timestamp}} \{\{message\}\}`,
-          debug: chalk`{blue.dim @\{\{line\}\} \{\{file\}\}${method}${timestamp}} \{\{message\}\}`,
-          verbose: chalk`{grey.dim @\{\{line\}\} \{\{file\}\}${method}${timestamp}} \{\{message\}\}`,
-          warn: chalk`{keyword('orange').dim @\{\{line\}\} \{\{file\}\}${method}${timestamp}} \{\{message\}\}`,
-          error: chalk`{red.dim @\{\{line\}\} \{\{file\}\}${method}${timestamp}} \{\{message\}\}\n\{\{stack\}\}`,
+          info: chalk`{cyan.dim @\{\{line\}\} ${file}${method}${timestamp}} \{\{message\}\}`,
+          debug: chalk`{blue.dim @\{\{line\}\} ${file}${method}${timestamp}} \{\{message\}\}`,
+          verbose: chalk`{grey.dim @\{\{line\}\} ${file}${method}${timestamp}} \{\{message\}\}`,
+          warn: chalk`{keyword('orange').dim @\{\{line\}\} ${file}${method}${timestamp}} \{\{message\}\}`,
+          error: chalk`{red.dim @\{\{line\}\} ${file}${method}${timestamp}} \{\{message\}\}\n\{\{stack\}\}`,
           // error : "{{timestamp}} <{{title}}> {{message}} (in {{file}}:{{line}})\nCall Stack:\n{{stack}}"
         }
       ],
