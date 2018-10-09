@@ -12,13 +12,16 @@ const chromafi = require('chromafi');
 
 function wrapMsg (msg, indentFirst = false, opts) {
   let indent = opts.gutterLen;
+
+  // msg = msg.substr(width);
+  let sep = chalk`{grey.bold \u2502 }`,
+      gutter = ''.padStart(indent - 2).concat(sep); // the 2 is the visual length of sep
+
   let width = process.stdout.columns - indent;
   //    console.log('width: ', width);
 
-  // msg = msg.substr(width);
-  let sep = chalk`{grey.bold \u2502 }`, gutter = ''.padStart(indent).concat(sep) ;
   // wrap the msg, remove windows line endings and use unix line endings, then use gutter indention
-  msg = wrap(msg, width, {trim: false}).replace(/\r\n/g, '\n').replace(/\n/g, '\n' + gutter) ;// {
+  msg = wrap(msg, width, {trim: false, hard: true}).replace(/\r\n/g, '\n').replace(/\n/g, '\n' + gutter) ;// {
 
   msg = indentFirst ? gutter + msg: sep + msg; // correct the first indention according to opts
   if(opts.divider) {
@@ -36,9 +39,11 @@ module.exports = function (opts) {
     {
       divider: false,
       showMethod: false,
+      showTimestamp: false,
       ellipse: '…', // single char ellipse
       lineNumLen: 4,
-      pathLen: 34,
+      pathLen: 35,
+      timestampLen: 12,
       fileLen: null, // autocalc from pathLen if null, if both methodLen and fileLen are defined (this plus methodLen - 1) == pathLen
       methodLen: null,  // autocalc from pathLen if null, if both methodLen and fileLen are defined (this plus fileLen - 1) == pathLen
     },
@@ -46,28 +51,32 @@ module.exports = function (opts) {
     opts
   );
 
-  opts.methodLen = opts.showMethod ? (opts.methodLen || (opts.fileLen ? (opts.pathLen - opts.fileLen - 1) : (opts.pathLen/2) - 1)): 0; // - 1 is there for the separator between path and method
+  opts.methodLen = opts.showMethod ? (opts.methodLen || (opts.fileLen ? (opts.pathLen - opts.fileLen - 1) : ((opts.pathLen - 1)/2))): 0; // - 1 is there for the separator between path and method
   opts.fileLen = opts.fileLen || opts.methodLen ? opts.pathLen - opts.methodLen - 1 : opts.pathLen; // - 1 is there for the separator between path and method
 
-  opts.gutterLen = opts.lineNumLen + opts.pathLen + 4; // the indentation length ( including spaces and sep char)
+  let method = opts.showMethod ? ':\{\{method\}\}':'',
+      timestamp = opts.showTimestamp ? ' - \{\{timestamp\}\}' :'' ;
+
+  // the indentation length ( including spaces and sep char). Each number represents spaces or separation chars
+  opts.gutterLen = 1 + opts.lineNumLen + 1 + opts.pathLen + (opts.showTimestamp ? 3 + opts.timestampLen : 0) + 3;
 
   // now create the tracer opts to merge with the opts
   opts = _.merge(
     // default tracer options and the functionality thereof
     {
       format : [
-        chalk`{dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' }} \{\{message\}\}`, //default format
+        chalk`{dim @\{\{line\}\} \{\{file\}\}${method}${timestamp}} \{\{message\}\}`, //default format
         {
-          info: chalk`{cyan.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' }} \{\{message\}\}`,
-          debug: chalk`{blue.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' }} {reset.red \{\{message\}\} }`,
-          verbose: chalk`{grey.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' }} \{\{message\}\}`,
-          warn: chalk`{keyword('orange').dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' }} \{\{message\}\}`,
-          error: chalk`{red.dim @\{\{line\}\} \{\{file\}\}${opts.showMethod ? ':\{\{method\}\}':'' }} \{\{message\}\}\n\{\{stack\}\}`,
+          info: chalk`{cyan.dim @\{\{line\}\} \{\{file\}\}${method}${timestamp}} \{\{message\}\}`,
+          debug: chalk`{blue.dim @\{\{line\}\} \{\{file\}\}${method}${timestamp}} \{\{message\}\}`,
+          verbose: chalk`{grey.dim @\{\{line\}\} \{\{file\}\}${method}${timestamp}} \{\{message\}\}`,
+          warn: chalk`{keyword('orange').dim @\{\{line\}\} \{\{file\}\}${method}${timestamp}} \{\{message\}\}`,
+          error: chalk`{red.dim @\{\{line\}\} \{\{file\}\}${method}${timestamp}} \{\{message\}\}\n\{\{stack\}\}`,
           // error : "{{timestamp}} <{{title}}> {{message}} (in {{file}}:{{line}})\nCall Stack:\n{{stack}}"
         }
       ],
 
-      dateformat : "HH:MM:ss.L",
+      dateformat : "HH:MM:ss.l",
       preprocess :  function(data){
         // data.title = data.title.toUpperCase();
 
