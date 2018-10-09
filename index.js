@@ -25,7 +25,7 @@ function wrapMsg (msg, indentFirst = false, opts) {
 
   msg = indentFirst ? gutter + msg: sep + msg; // correct the first indention according to opts
   if(opts.divider) {
-    msg = msg + '\n'.padEnd(indent, '\u2500') + '\u253C' + chalk.dim(''.padEnd(width - 1, '\u2500')); // put divider
+    msg = msg + '\n'.padEnd(indent - 1, '\u2500') + '\u253C' + chalk.dim(''.padEnd(width , '\u2500')); // put divider
   }
 
   // return the msg
