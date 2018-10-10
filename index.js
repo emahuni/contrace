@@ -10,6 +10,8 @@ const chalk = require('chalk');
 const _ = require('lodash');
 const chromafi = require('chromafi');
 
+let clockIndex = 0;
+
 function wrapMsg (msg, indentFirst = false, opts) {
   let indent = opts.gutterLen;
 
@@ -44,7 +46,7 @@ module.exports = function (opts) {
       ellipse: '…', // single char ellipse
       lineNumLen: 4,
       pathLen: 35,
-      timestampLen: 12,
+      timestampLen: 13,
       fileLen: null, // autocalc from pathLen if null, if both methodLen and fileLen are defined (this plus methodLen - 1) == pathLen
       methodLen: null,  // autocalc from pathLen if null, if both methodLen and fileLen are defined (this plus fileLen - 1) == pathLen
     },
@@ -56,9 +58,12 @@ module.exports = function (opts) {
   opts.fileLen = opts.showFile ? (opts.fileLen || opts.methodLen ? opts.pathLen - opts.methodLen - 1 : opts.pathLen): 0; // - 1 is there for the separator between path and method
   opts.timestampLen = opts.showTimestamp ? 3 + opts.timestampLen: 0;
 
+  // easter egg, animating clock:
+  let clocks = '🕐 🕑 🕒 🕓 🕔 🕕 🕖 🕗 🕘 🕙 🕚 🕛'.split(' ');
+
   let file = opts.showFile ? '\{\{file\}\}':'',
       method = opts.showMethod ? ':\{\{method\}\}':'',
-      timestamp = opts.showTimestamp ? ' - \{\{timestamp\}\}' :'' ;
+      timestamp = opts.showTimestamp ? `⁖\{\{clock\}\}⁞\{\{timestamp\}\}` :'' ;
 
   // the indentation length ( including spaces and sep char). Each number represents spaces or separation chars
   opts.gutterLen = 1 + opts.lineNumLen + 1 + opts.fileLen + (opts.showMethod ? 1:0) + opts.methodLen + opts.timestampLen + 3;
@@ -82,6 +87,9 @@ module.exports = function (opts) {
       dateformat : "HH:MM:ss.l",
       preprocess :  function(data){
         // data.title = data.title.toUpperCase();
+
+        // get the next clock
+        data.clock = clocks[clockIndex < clocks.length  ? clockIndex++ : (clockIndex = 0)];
 
         data.line = data.line.padStart(opts.lineNumLen);
         data.file = path.dirname(data.path) + path.sep + ellipsize(data.file, opts.fileLen / 1.5); // concatenate path and file name (ellipsize the fn if > fileLen/1.5)
