@@ -16,16 +16,16 @@ function wrapMsg (msg, indentFirst = false, opts) {
   let indent = opts.gutterLen;
 
   // msg = msg.substr(width);
-  let sep = chalk`{grey.bold \u2502 }`,
-      gutter = ''.padStart(indent - 2).concat(sep); // the 2 is the visual length of sep
+  let sep = chalk`{grey.dim ┅╋ }`,
+      emptyGutter = ''.padEnd(opts.typeLen + opts.lineNumLen, ' ').concat(chalk`{grey.dim  ┃}`).concat(''.padEnd(indent - (opts.showLogType ? 4 : 3) - opts.typeLen - opts.lineNumLen).concat(chalk`{grey.dim ┊ }`)); // the 2 is the visual length of sep
 
-  let width = process.stdout.columns - indent;
+  let width = process.stdout.columns - indent - 2;
   //    console.log('width: ', width);
 
-  // wrap the msg, remove windows line endings and use unix line endings, then use gutter indention
-  msg = wrap(msg, width, {trim: false, hard: true}).replace(/\r\n/g, '\n').replace(/\n/g, '\n' + gutter) ;// {
+  // wrap the msg, remove windows line endings and use unix line endings, then use gutter indention  replacing the start line sep with a dotted one to show wraps
+  msg = wrap(msg, width, {trim: false, hard: true}).replace(/\r\n/g, '\n').replace(/\n/g, '\n' + emptyGutter);// {
 
-  msg = indentFirst ? gutter + msg: sep + msg; // correct the first indention according to opts
+  msg = indentFirst ? emptyGutter + msg: sep + msg; // correct the first indention according to opts
   if(opts.divider) {
     msg = msg + '\n'.padEnd(indent - 1, '\u2500') + '\u253C' + chalk.dim(''.padEnd(width , '\u2500')); // put divider
   }
@@ -40,10 +40,13 @@ module.exports = function (opts) {
     // default opts
     {
       divider: false,
+      showLogType: false,
       showFile: true,
       showMethod: false,
       showTimestamp: false,
       ellipse: '…', // single char ellipse
+
+      typeLen: 4,
       lineNumLen: 4,
       pathLen: 35,
       timestampLen: 13,
@@ -54,32 +57,41 @@ module.exports = function (opts) {
     opts
   );
 
-  opts.methodLen = opts.showMethod ? (opts.methodLen || (opts.fileLen ? (opts.pathLen - opts.fileLen - 1) : ((opts.pathLen - 1)/2))): 0; // - 1 is there for the separator between path and method
-  opts.fileLen = opts.showFile ? (opts.fileLen || opts.methodLen ? opts.pathLen - opts.methodLen - 1 : opts.pathLen): 0; // - 1 is there for the separator between path and method
-  opts.timestampLen = opts.showTimestamp ? 3 + opts.timestampLen: 0;
+  opts.methodLen = opts.showMethod ? (opts.methodLen || (opts.fileLen ? (opts.pathLen - opts.fileLen - 1) : ((opts.pathLen - 1)/2))) : 0; // - 1 is there for the separator between path and method
+  opts.fileLen = opts.showFile ? (opts.fileLen || opts.methodLen ? opts.pathLen - opts.methodLen - 1 : opts.pathLen) : 0; // - 1 is there for the separator between path and method
+  opts.timestampLen = opts.showTimestamp ? 3 + opts.timestampLen : 0;
+  opts.typeLen = opts.showLogType ? 1 + opts.typeLen : 0;
 
   // easter egg, animating clock:
   let clocks = '🕐 🕑 🕒 🕓 🕔 🕕 🕖 🕗 🕘 🕙 🕚 🕛'.split(' ');
 
   let file = opts.showFile ? '\{\{file\}\}':'',
       method = opts.showMethod ? ':\{\{method\}\}':'',
-      timestamp = opts.showTimestamp ? `⁖\{\{clock\}\}⁞\{\{timestamp\}\}` :'' ;
+      timestamp = opts.showTimestamp ? ` \{\{clock\}\}⁞\{\{timestamp\}\}` :'',
+      typeSep = '⁙';
+
+  let logTxt = opts.showLogType ? ` Log${typeSep}` : '',
+      verboTxt = opts.showLogType ? `Verb${typeSep}` : '',
+      infoTxt = opts.showLogType ? `Info${typeSep}` : '',
+      debugTxt = opts.showLogType ? `Dbug${typeSep}` : '',
+      warnTxt = opts.showLogType ? `Warn${typeSep}` : '',
+      errorTxt = opts.showLogType ? ` Err${typeSep}` : '';
 
   // the indentation length ( including spaces and sep char). Each number represents spaces or separation chars
-  opts.gutterLen = 1 + opts.lineNumLen + 1 + opts.fileLen + (opts.showMethod ? 1:0) + opts.methodLen + opts.timestampLen + 3;
+  opts.gutterLen = opts.typeLen + (opts.showLogType ? 1 : 0) + opts.lineNumLen + 1 + opts.fileLen + (opts.showMethod ? 1 : 0) + opts.methodLen + opts.timestampLen + 3;
 
   // now create the tracer opts to merge with the opts
   opts = _.merge(
     // default tracer options and the functionality thereof
     {
       format : [
-        chalk`{dim @\{\{line\}\} ${file}${method}${timestamp}} \{\{message\}\}`, //default format
+        chalk`{dim ${logTxt}\{\{line\}\}${file}${method}${timestamp}}\{\{message\}\}`, //default format
         {
-          info: chalk`{cyan.dim @\{\{line\}\} ${file}${method}${timestamp}} \{\{message\}\}`,
-          debug: chalk`{blue.dim @\{\{line\}\} ${file}${method}${timestamp}} \{\{message\}\}`,
-          verbose: chalk`{grey.dim @\{\{line\}\} ${file}${method}${timestamp}} \{\{message\}\}`,
-          warn: chalk`{keyword('orange').dim @\{\{line\}\} ${file}${method}${timestamp}} \{\{message\}\}`,
-          error: chalk`{red.dim @\{\{line\}\} ${file}${method}${timestamp}} \{\{message\}\}\n\{\{stack\}\}`,
+          verbose: chalk`{grey.dim ${verboTxt}\{\{line\}\}${file}${method}${timestamp}}\{\{message\}\}`,
+          info: chalk`{cyan.dim ${infoTxt}\{\{line\}\}${file}${method}${timestamp}}\{\{message\}\}`,
+          debug: chalk`{blue.dim ${debugTxt}\{\{line\}\}${file}${method}${timestamp}}\{\{message\}\}`,
+          warn: chalk`{keyword('orange').dim ${warnTxt}\{\{line\}\}${file}${method}${timestamp}}\{\{message\}\}`,
+          error: chalk`{red.dim ${errorTxt}\{\{line\}\}${file}${method}${timestamp}}\{\{message\}\}\n\{\{stack\}\}`,
           // error : "{{timestamp}} <{{title}}> {{message}} (in {{file}}:{{line}})\nCall Stack:\n{{stack}}"
         }
       ],
@@ -91,7 +103,7 @@ module.exports = function (opts) {
         // get the next clock
         data.clock = clocks[clockIndex < clocks.length  ? clockIndex++ : (clockIndex = 0)];
 
-        data.line = data.line.padStart(opts.lineNumLen);
+        data.line = data.line.padStart(opts.lineNumLen, ' ').concat(chalk`{grey.dim ┅┫}`);
         data.file = path.dirname(data.path) + path.sep + ellipsize(data.file, opts.fileLen / 1.5); // concatenate path and file name (ellipsize the fn if > fileLen/1.5)
         data.file = data.file.length > opts.fileLen ? opts.ellipse + data.file.slice((opts.fileLen - opts.ellipse.length) * -1)  : data.file ; // trime excess path chars
         data.method = opts.showMethod ? ellipsize(data.method, opts.methodLen).padEnd(opts.methodLen): null;
