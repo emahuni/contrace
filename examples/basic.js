@@ -1,11 +1,11 @@
 const chalk = require('chalk');
 
 const contrace = require('..')({
-  showTimestamp: true,
   showLogType: true,
+  showTimestamp: true,
 });
 
-contrace.debug(contrace);
+// contrace.debug(contrace);
 
 contrace.log('Log method is the simplest method for logging out, mainly used to output just about anything you want.');
 contrace.info('Info is there to announce certain information like events and notifications \u2139');
@@ -39,7 +39,9 @@ const obj = {
     'seven',
   ],
 };
+// add a circular reference to the object to show support for circular structures
 obj.recursive = obj;
+
 contrace.debug(chalk`Debug is there for trying to figure out variable contents etc. You use it temporarily to track certain values etc. Here a circular reference is introduced to show that it can handle circular structures. It tries to make sure everything still looks like js and is readable, take a look at this debug of {bold obj}:`, obj);
 
 contrace.warn('Warning is for generally giving warning about something that you think can cause issues');

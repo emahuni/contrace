@@ -60,10 +60,10 @@ module.exports = function (opts) {
     // default opts
     {
       divider: false,
-      showLogType: false,
+      showLogType: true,
       showFile: true,
       showMethod: false,
-      showTimestamp: false,
+      showTimestamp: true,
       ellipse: '…', // single char ellipse
 
       typeLen: 5,
