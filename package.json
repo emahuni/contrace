@@ -40,8 +40,5 @@
     "type-detect": "^4.0.8",
     "word-wrap": "^1.2.3",
     "wrap-ansi": "^3.0.1"
-  },
-  "engines": {
-    "node": "^8"
   }
 }
