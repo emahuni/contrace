@@ -1,12 +1,12 @@
-const util = require('util');
-const path = require('path');
+const util = require('util'); // todo: use stringkit instead
+const path = require('path'); // use another lib here, this will limit it to nodejs only or otherwise we need compiling
 
 // console.log(process.stdout.columns);
 const typeOf = require('type-detect');
 const ellipsize = require('ellipsize');
 // const wrap = require('word-wrap');
-const wrap = require('wrap-ansi');
-const chalk = require('chalk');
+const wrap = require('wrap-ansi');  // todo find a replacement for this module, it's not compatible with webpack
+const chalk = require('chalk'); // todo we need a browser compatible version of this
 const _ = require('lodash');
 const chromafi = require('chromafi');
 

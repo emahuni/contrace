@@ -32,13 +32,13 @@
   },
   "homepage": "https://github.com/emahuni/contrace#readme",
   "dependencies": {
-    "chalk": "^2.4.1",
+    "chalk": "^2.4",
     "chromafi": "git+https://github.com/emahuni/chromafi.git",
-    "ellipsize": "^0.1.0",
-    "lodash": "^4.17.10",
-    "tracer": "^0.9.1",
-    "type-detect": "^4.0.8",
-    "word-wrap": "^1.2.3",
-    "wrap-ansi": "^3.0.1"
+    "ellipsize": "^0.1",
+    "lodash": "^4.17",
+    "tracer": "^0.9.8",
+    "type-detect": "^4.0",
+    "word-wrap": "^1.2",
+    "wrap-ansi": "^3.0"
   }
 }
